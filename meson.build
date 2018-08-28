@@ -1,4 +1,4 @@
-project('nagios-tang', 'c', license: 'GPL3+', version: '6',
+project('nagios-tang', 'c', license: 'GPL3+', version: '7',
         default_options: 'c_std=c99')
 
 add_project_arguments(
