@@ -24,24 +24,39 @@ add_project_arguments(
   language: 'c'
 )
 
+libexecdir = join_paths(get_option('prefix'), get_option('libexecdir'))
+
 http = meson.get_compiler('c').find_library('http_parser')
 jose = dependency('jose', version: '>=8')
 
-libexecdir = join_paths(get_option('prefix'), get_option('libexecdir'))
-tang = find_program(join_paths(libexecdir, 'tangd'), required: false)
-kgen = find_program(join_paths(libexecdir, 'tangd-keygen'), required: false)
-updt = find_program(join_paths(libexecdir, 'tangd-update'), required: false)
 actv = find_program('systemd-socket-activate', required: false)
+tang = find_program([
+  join_paths(libexecdir, 'tangd'),
+  '/usr/libexec/tangd',
+  '/usr/local/libexec/tangd',
+], required: false)
+kgen = find_program([
+  join_paths(libexecdir, 'tangd-keygen'),
+  '/usr/libexec/tangd-keygen',
+  '/usr/local/libexec/tangd-keygen',
+], required: false)
+updt = find_program([
+  join_paths(libexecdir, 'tangd-update'),
+  '/usr/libexec/tangd-update',
+  '/usr/local/libexec/tangd-update',
+], required: false)
+
 if tang.found() and kgen.found() and updt.found() and actv.found()
-  test('tang', find_program(meson.current_source_dir() + '/tang'),
-    env: [
-      'PATH=' + ':'.join([
-        join_paths(get_option('prefix'), get_option('bindir')),
-        meson.current_build_dir(),
-        libexecdir,
-      ])
-    ]
+  env = environment()
+  env.append('PATH',
+    meson.current_build_dir(),
+    libexecdir,
+    '/usr/libexec',
+    '/usr/local/libexec',
+    separator: ':'
   )
+
+  test('tang', find_program(meson.current_source_dir() + '/tang'), env: env)
 else
   warning('Will not run tests due to missing dependencies!')
 endif
