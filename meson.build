@@ -40,13 +40,8 @@ kgen = find_program([
   '/usr/libexec/tangd-keygen',
   '/usr/local/libexec/tangd-keygen',
 ], required: false)
-updt = find_program([
-  join_paths(libexecdir, 'tangd-update'),
-  '/usr/libexec/tangd-update',
-  '/usr/local/libexec/tangd-update',
-], required: false)
 
-if tang.found() and kgen.found() and updt.found() and actv.found()
+if tang.found() and kgen.found() and actv.found()
   env = environment()
   env.append('PATH',
     meson.current_build_dir(),

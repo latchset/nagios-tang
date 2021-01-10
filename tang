@@ -28,15 +28,13 @@ trap 'exit' ERR
 
 export TMP=`mktemp -d`
 mkdir -p $TMP/db
-mkdir -p $TMP/cache
 
 # Generate the server keys
 tangd-keygen $TMP/db
-tangd-update $TMP/db $TMP/cache
 
 # Start the server
 port=`shuf -i 1024-65536 -n 1`
-systemd-socket-activate --inet -l 127.0.0.1:$port -a $VALGRIND tangd $TMP/cache &
+systemd-socket-activate --inet -l 127.0.0.1:$port -a $VALGRIND tangd $TMP/db &
 export PID=$!
 sleep 0.5
 
